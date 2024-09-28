@@ -1,0 +1,18 @@
+module DijkstraCore
+(
+	input Clk,
+	input logic [31:0] qRun,
+	output logic [9:0] 
+);
+	
+	logic [12:0] qDijkstra;
+	
+	Dijkstra	Dijkstra(.clock ( Clk ),
+							.data ( qRun ),
+							.rdaddress (  ),
+							.wraddress (  ),
+							.wren (  ),
+							.q ( qDijkstra ));
+
+
+	

@@ -1,0 +1,166 @@
+module Palette
+(
+	input logic Clk, Reset,
+	output logic [7:0] VGA_R, VGA_G, VGA_B
+);
+	logic [4:0] ColorSelect;
+	
+	always_ff @ (posedge VGA_CLK) begin
+		unique case(ColorSelect)
+		
+		/* Black (path) */
+		0: begin
+			R <= 8'h00;
+			G <= 8'h00;
+			B <= 8'h00;
+			end
+		
+		/* Start */
+		1: begin
+			R <= 8'hC0;
+			G <= 8'hC0;
+			B <= 8'hC0;
+			end
+		
+		/* Finish */
+		2: begin
+			R <= 8'h7F;
+			G <= 8'h82;
+			B <= 8'hBB;
+			end
+		
+		/* Blue */
+		3:	begin
+			R <= 8'h32;
+			G <= 8'h82;
+			B <= 8'hF6;
+			end
+		
+		/* Blue2 */
+		4: begin
+			R <= 8'h00;
+			G <= 8'h23;
+			B <= 8'hF5;
+			end
+		
+		/* Blue3 */
+		5: begin
+			R <= 8'h00;
+			G <= 8'h12;
+			B <= 8'h9A;
+			end
+		
+		/* Purple */
+		6: begin
+			R <= 8'h73;
+			G <= 8'h2B;
+			B <= 8'hF5;
+			end
+		
+		/* Purple2 */
+		7:	begin
+			R <= 8'h7E;
+			G <= 8'h84;
+			B <= 8'hF7;
+			end
+		
+		/* Purple3 */
+		8: begin
+			R <= 8'h58;
+			G <= 8'h13;
+			B <= 8'h5E;
+			end
+		
+		/* Red */
+		9: begin
+			R <= 8'hEB;
+			G <= 8'h33;
+			B <= 8'h24;
+			end
+		
+		/* Red2 */
+		10: begin
+			R <= 8'hF0;
+			G <= 8'h87;
+			B <= 8'h84;
+			end
+		
+		/* Pink */
+		11: begin
+			R <= 8'hEA;
+			G <= 8'h36;
+			B <= 8'h80;
+			end
+		
+		/* Yellow */
+		12: begin
+			R <= 8'hFF;
+			G <= 8'hFD;
+			B <= 8'h55;
+			end
+		
+		/* Yellow2 */
+		13: begin
+			R <= 8'hFF;
+			G <= 8'hFE;
+			B <= 8'h91;
+			end
+		
+		/* Orange */
+		14: begin
+			R <= 8'hF0;
+			G <= 8'h86;
+			B <= 8'h50;
+			end
+		
+		/* Orange2 */
+		15: begin
+			R <= 8'hF0;
+			G <= 8'hBE;
+			B <= 8'h46;
+			 end
+		
+		/* Green */
+		16: begin
+			R <= 8'hA1;
+			G <= 8'hFB;
+			B <= 8'h8E;
+			 end
+		
+		/* Green2 */
+		17: begin
+			R <= 8'h75;
+			G <= 8'hF9;
+			B <= 8'h4D;
+			 end
+		
+		/* Green3 */
+		18: begin
+			R <= 8'h37;
+			G <= 8'h7D;
+			B <= 8'h22;
+			 end
+			 
+		/* Teal */
+		19: begin
+			R <= 8'h36;
+			G <= 8'h7E;
+			B <= 8'h7F;
+			 end
+		
+		/* Teal2 */
+		20: begin
+			R <= 8'h48;
+			G <= 8'hAB;
+			B <= 8'hC9;
+			 end
+			
+		default: begin
+			R <= 8'h00;
+			G <= 8'h00;
+			B <= 8'h00;
+			end
+		endcase
+	end
+	
+endmodule	

@@ -1,0 +1,15 @@
+package state_t;
+	typedef enum logic [3:0] {
+		 RESET, // 0
+		 IDLE,  // 1
+		 INIT,  // 2
+		 LOAD_END, // 3
+		 BOUND_CHECK, // 4
+		 VISIT_NODES, // 5
+		 CHECK_NEIGHBORS, // 6
+		 DONE_BFS, // 7
+		 LOAD_PREV, // 8
+		 TRACE_PATH, // 9
+		 FINISH // 10
+	} state_t;
+endpackage state_t;

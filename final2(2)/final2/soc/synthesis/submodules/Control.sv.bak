@@ -1,0 +1,130 @@
+module Control
+(
+	input Clk, Reset, check, valid, done,
+	output logic Run, Clean,
+	
+	/* For PixelRender */
+	output logic				READ_PR, WRITE_PR, CS_PR, // READ unused
+	output logic [3:0]      BYTE_EN_PR, 
+	output logic [31:0]		WRITEDATA_PR,
+	output logic [9:0]		ADDRESS_PR,
+	
+	input logic [31:0] 		READDATA_PR,	// unused
+	input logic 				WAIT_REQUEST_PR,
+	
+	/* For DijkstraCore */
+	output logic				READ_DC, WRITE_DC, CS_DC, // READ unused
+	output logic [15:0]		WRITEDATA_DC,
+	output logic [9:0]		ADDRESS_DC,
+	
+	input logic [15:0] 		READDATA_DC,	// unused
+	input logic 				WAIT_REQUEST_DC
+);
+	logic [9:0] addr_counter_pr;
+	logic [11:0] addr_counter_dc; 
+	logic increment_pr, increment_dc, clean_done, ld_clean_done; // for use in Reset. We count each addresses
+	
+	assign READ_PR = 1'b0; // We dont want to read anything
+	assign READ_DC = 1'b0;
+	
+	assign BYTE_EN_PR = 4'b1111; // We want to write everything to zeros
+	
+	assign WRITEDATA_PR = 32'd0; // Data set to zero
+	assign WRITEDATA_DC = 12'd0;
+	
+	always_ff @ (posedge Clk) begin
+		if( State != RESET ) begin
+			addr_counter_pr <= 0;
+			addr_counter_dc <= 0;
+		end else if( increment_pr )
+			addr_counter_pr <= addr_counter_pr + 10'd1;
+		else if( increment_dc )
+			addr_counter_dc <= addr_counter_dc + 12'd1;
+	end
+	
+	always_ff @ (posedge Clk) begin
+		if( State == DRAW )
+			clean_done <= 1'b0;
+		else if( ld_clean_done)
+			clean_done <= 1'b1;
+	end
+	
+	enum logic [2:0] {DRAW, VERIFY, PROCESS, FINISH, RESET} State, Next_state;
+	
+	always_ff @ (posedge Clk) begin
+		begin
+			if (Reset)
+				State <= RESET;
+			else 
+				State <= Next_state;
+		end
+	end
+	
+	always_comb begin
+	
+		// Default next state is staying at current state
+		Next_state = State;
+		
+		CS_PR = 1'b0;
+		CS_DC = 1'b0;
+		
+		ADDRESS_PR = 0;
+		ADDRESS_DC = 0;
+		
+		increment_pr = 1'b0;
+		increment_dc = 1'b0;
+		
+		ld_clean_done = 1'b0;
+		
+		WRITE_PR = 1'b0;
+		WRITE_DC = 1'b0;
+			
+		// check -> valid -> Run
+		unique case (State)
+			DRAW: if( check ) Next_state = VERIFY;
+			VERIFY: if( valid ) Next_state = PROCESS;
+					  else Next_state = DRAW;
+			PROCESS: if( done ) Next_state = FINISH;
+			FINISH: Next_state = FINISH;
+			RESET: if( clean_done ) Next_state = DRAW;
+		endcase
+		
+		case (State)
+			PROCESS: begin
+							Run = 1'b1;
+							Clean = 1'b0;
+						end
+						
+			RESET: begin
+						Run = 1'b0;
+						Clean = 1'b1;
+						if( addr_counter_pr <= 959 ) begin
+							CS_PR = 1'b1;
+							ADDRESS_PR = addr_counter_pr;
+							increment_pr = 1'b1;
+							WRITE_PR = 1'b1;
+						end else begin
+							CS_PR = 1'b0;
+							ADDRESS_PR = 0;
+							increment_pr = 1'b0;
+							WRITE_PR = 1'b0;
+						end if( addr_counter_dc <= 3839 ) begin
+							CS_DC = 1'b1;
+							ADDRESS_DC = addr_counter_dc;
+							increment_dc = 1'b1;
+							WRITE_DC = 1'b1;
+						end else begin
+							ld_clean_done = 1'b1;
+						end
+					 end
+						
+						
+			default: begin
+							Run = 1'b0;
+							Clean = 1'b0;
+						end
+		endcase	 
+	end
+	
+	
+endmodule

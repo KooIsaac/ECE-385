@@ -1,0 +1,47 @@
+module PixelOCM
+(
+	input logic 		Clk, WE_OCM, RE_OCM,
+	input logic [4:0] dPixelWrite,
+	input logic [8:0] read_addr, write_addr,
+	output logic [4:0] qPixelRead
+);
+	
+	logic [4:0] PixelXRead; 
+	logic [3:0] PixelYRead;
+	
+	logic [4:0] PixelXWrite;
+	logic [3:0] PixelYWrite;
+	
+   logic [4:0] pixelstatus[307200];
+	
+	initial begin
+		for( int row=0; row<480; row++ ) begin
+			for( int col=0; col<640; col++ ) begin
+				pixelstatus[col + row*640] = 0; // All black initially
+			end
+		end
+	end
+	
+	always_comb begin
+		TilesXRead = read_addr[8:4];
+		TilesYRead = read_addr[3:0];
+	end
+	
+	always_comb begin
+		TilesXWrite = write_addr[8:4];
+		TilesYWrite = write_addr[3:0];
+	end
+	
+	always @ (posedge Clk) begin
+		if(~WE_OCM) 
+			pixelstatus[ TilesXWrite + TilesYWrite*640 ] <= dTileWrite;
+	end
+	
+	always @ (posedge Clk) begin
+		if(~RE_OCM) 
+			qTileRead <= pixelstatus[ TilesXRead + TilesYRead*640 ];
+	end
+	
+	//336
+	
+endmodule

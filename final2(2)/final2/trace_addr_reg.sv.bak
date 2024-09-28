@@ -1,0 +1,14 @@
+import state_t::*;
+
+module trace_addr_reg
+( 
+	input logic Clk,
+	input state_t State,
+	
+/* trace_addr register */
+	always_ff @ (posedge Clk) begin
+		if( State == RESET )
+			trace_addr <= 0;
+		else if( LD_trace_addr )
+			trace_addr <= trace_addr_data;
+	end

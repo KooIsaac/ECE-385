@@ -1,0 +1,149 @@
+import state_t::*;
+
+module BoundCheck
+(
+    /* BoundCheck1 */
+    input logic Clk,
+    input state_t State,
+    input logic LD_NEIGHBORS[4],
+    input logic [31:0] qRun, // data from OCM
+    input logic [11:0] pop_node,
+    
+    /* BoundCheck2 */
+    input logic [11:0] visited_index[4],
+    input logic LD_VISITED[4],
+    
+    /* BoundCheck Result */
+    output logic [11:0] valid_nodes[4]
+);
+
+    logic [12:0] neighbors[4]; // neighbors in {X,Y, valid} format
+    logic is_visited[4];
+    
+    BoundCheck1 BoundCheck1(
+        .Clk(Clk),
+        .State(State),
+        .LD_NEIGHBORS(LD_NEIGHBORS),
+        .qRun(qRun),
+        .pop_node(pop_node),
+        .neighbors(neighbors)
+    );
+
+    BoundCheck2 BoundCheck2_inst (
+        .Clk(Clk),
+        .State(State),
+        .visited_index(visited_index),
+        .neighbors(neighbors),
+        .LD_VISITED(LD_VISITED),
+        .is_visited(is_visited)
+    );
+    
+    always_comb begin
+        for (int i = 0; i < 4; i++) begin
+            if (is_visited[i] & neighbors[i][0])
+                valid_nodes[i] = neighbors[i][12:1];
+            else
+                valid_nodes[i] = 12'b111111111111;
+        end
+    end
+
+endmodule
+/*
+module BoundCheck2
+(
+    input logic Clk,
+    input state_t State,
+    input logic [11:0] visited_index[4],
+    input logic [12:0] neighbors[4],
+    input logic LD_VISITED[4],
+    output logic is_visited[4]
+);
+    logic visited[3840];
+    
+    always_comb begin
+        for (int i = 0; i < 4; i++) begin
+            is_visited[i] = visited[neighbors[i][12:1]];
+        end
+    end
+    
+    
+    always_ff @(posedge Clk) begin
+        if (State == RESET) begin
+            for (int i = 0; i < 3840; i++) begin
+                visited[i] <= 1'b0;
+            end
+        end else begin
+				if( LD_VISITED[0] )
+					visited[visited_index[0]] <= 1'b1;
+				if( LD_VISITED[1] )
+					visited[visited_index[1]] <= 1'b1;
+				if( LD_VISITED[2] )
+					visited[visited_index[2]] <= 1'b1;
+				if( LD_VISITED[3] )
+					visited[visited_index[3]] <= 1'b1;
+        end
+    end
+
+endmodule */
+
+module BoundCheck1
+(
+    input logic Clk,
+    input state_t State,
+    input logic LD_NEIGHBORS[4],
+    input logic [31:0] qRun, // data from OCM
+    input logic [11:0] pop_node,
+    
+    output logic [12:0] neighbors[4] // neighbors in X+Y*64 format
+);
+    logic boundaries[4], valid[4];
+    logic [7:0] incoming_data[4];
+    
+    assign boundaries[0] = (pop_node[5:0] > 0) ? 1'b1 : 1'b0; // up
+    assign boundaries[1] = (pop_node[11:6] < 63) ? 1'b1 : 1'b0; // right
+    assign boundaries[2] = (pop_node[5:0] < 59) ? 1'b1 : 1'b0; // bottom
+    assign boundaries[3] = (pop_node[11:6] > 0) ? 1'b1 : 1'b0; // left
+    
+    always_comb begin
+        for (int i = 0; i < 4; i++) begin
+            if (boundaries[i]) begin
+                unique case(neighbors[i][2:1])
+                    2'd0: incoming_data[i] = qRun[7:0];
+                    2'd1: incoming_data[i] = qRun[15:8];
+                    2'd2: incoming_data[i] = qRun[23:16];
+                    2'd3: incoming_data[i] = qRun[31:24];
+                endcase
+                
+                if (incoming_data[i] <= 8'd2) begin
+                    valid[i] = 1'b1;
+                end else begin
+                    valid[i] = 1'b0;
+                end
+            end else begin
+                valid[i] = 1'b0;
+            end
+        end
+    end
+    
+    /* neighbor family register */
+    always_ff @(posedge Clk) begin
+        if ((State == RESET) || (State == CHECK_NEIGHBORS)) begin //RESET or CHECK_NEIGHBORS
+            for (int i = 0; i < 4; i++) begin
+                neighbors[i] <= 12'd0;
+            end
+        end else begin
+            if (boundaries[0] & LD_NEIGHBORS[0] & valid[0])
+                neighbors[0] <= {{6'd0, pop_node[11:6]} + {(pop_node[5:0] - 6'd1), 6'd0}, 1'b1};
+					 
+            if (boundaries[1] & LD_NEIGHBORS[1] & valid[1])
+                neighbors[1] <= {{6'd0, (pop_node[11:6] + 6'd1)} + {pop_node[5:0], 6'd0}, 1'b1};
+					 
+            if (boundaries[2] & LD_NEIGHBORS[2] & valid[2])
+                neighbors[2] <= {{6'd0, pop_node[11:6]} + {(pop_node[5:0] + 6'd1), 6'd0}, 1'b1};
+					 
+            if (boundaries[3] & LD_NEIGHBORS[3] & valid[3])
+                neighbors[3] <= {{6'd0, (pop_node[11:6] - 6'd1)} + {pop_node[5:0], 6'd0}, 1'b1};
+        end
+    end
+    
+endmodule

@@ -1,0 +1,12 @@
+PixelRender
+(
+	input logic 				Clk, Reset,
+	input logic [9:0] 		DrawX, DrawY,
+	
+	output logic [19:0] 		SRAM_ADDR	  			// Addressing of the SRAM
+);
+	logic [19:0] read_addr, write_addr; // {X,Y}
+	
+	
+	assign read_addr = {DrawX, DrawY};
+	PixelOCM(.*);

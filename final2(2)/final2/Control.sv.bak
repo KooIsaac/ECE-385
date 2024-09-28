@@ -1,0 +1,40 @@
+module Control
+(
+	input Clk, Reset, Execute,
+	output logic Run,
+);
+
+
+	enum logic [1:0] {DRAW, VERIFY, PROCESS, FINISH} State, Next_state;
+	
+	always_ff @ (posedge Clk) begin
+		begin
+			if (Reset) begin
+				State <= DRAW;
+			end
+			else 
+				State <= Next_state;
+		end
+	end
+	
+	always_comb begin
+	
+		// Default next state is staying at current state
+		Next_state = State;
+		
+		unique case (State)
+			DRAW: if( Execute ) Next_state = VERIFY;
+			VERIFY: if( valid ) Next_state = PROCESS;
+			PROCESS: if( path_done ) Next_state = FINISH;
+			FINISH: Next_state = FINISH;
+		endcase
+		
+		case (State)
+			DRAW: Run = 0;
+			VERIFY: Run = 1;
+			
+		endcase	 
+	end
+	
+	
+endmodule

@@ -1,0 +1,82 @@
+
+State Machine - |toplevel|Control:Control|State
+Name State.DRAW State.PROCESS State.VERIFY 
+State.DRAW 0 0 0 
+State.VERIFY 1 0 1 
+State.PROCESS 1 1 0 
+
+State Machine - |toplevel|soc:SoC|soc_sdram:sdram|m_next
+Name m_next.010000000 m_next.000010000 m_next.000001000 m_next.000000001 
+m_next.000000001 0 0 0 0 
+m_next.000001000 0 0 1 1 
+m_next.000010000 0 1 0 1 
+m_next.010000000 1 0 0 1 
+
+State Machine - |toplevel|soc:SoC|soc_sdram:sdram|m_state
+Name m_state.100000000 m_state.010000000 m_state.001000000 m_state.000100000 m_state.000010000 m_state.000001000 m_state.000000100 m_state.000000010 m_state.000000001 
+m_state.000000001 0 0 0 0 0 0 0 0 0 
+m_state.000000010 0 0 0 0 0 0 0 1 1 
+m_state.000000100 0 0 0 0 0 0 1 0 1 
+m_state.000001000 0 0 0 0 0 1 0 0 1 
+m_state.000010000 0 0 0 0 1 0 0 0 1 
+m_state.000100000 0 0 0 1 0 0 0 0 1 
+m_state.001000000 0 0 1 0 0 0 0 0 1 
+m_state.010000000 0 1 0 0 0 0 0 0 1 
+m_state.100000000 1 0 0 0 0 0 0 0 1 
+
+State Machine - |toplevel|soc:SoC|soc_sdram:sdram|i_next
+Name i_next.111 i_next.101 i_next.010 i_next.000 
+i_next.000 0 0 0 0 
+i_next.010 0 0 1 1 
+i_next.101 0 1 0 1 
+i_next.111 1 0 0 1 
+
+State Machine - |toplevel|soc:SoC|soc_sdram:sdram|i_state
+Name i_state.111 i_state.101 i_state.011 i_state.010 i_state.001 i_state.000 
+i_state.000 0 0 0 0 0 0 
+i_state.001 0 0 0 0 1 1 
+i_state.010 0 0 0 1 0 1 
+i_state.011 0 0 1 0 0 1 
+i_state.101 0 1 0 0 0 1 
+i_state.111 1 0 0 0 0 1 
+
+State Machine - |toplevel|soc:SoC|soc_nios2_gen2_0:nios2_gen2_0|soc_nios2_gen2_0_cpu:cpu|soc_nios2_gen2_0_cpu_nios2_oci:the_soc_nios2_gen2_0_cpu_nios2_oci|soc_nios2_gen2_0_cpu_debug_slave_wrapper:the_soc_nios2_gen2_0_cpu_debug_slave_wrapper|soc_nios2_gen2_0_cpu_debug_slave_tck:the_soc_nios2_gen2_0_cpu_debug_slave_tck|DRsize
+Name DRsize.101 DRsize.100 DRsize.011 DRsize.010 DRsize.001 DRsize.000 
+DRsize.000 0 0 0 0 0 0 
+DRsize.001 0 0 0 0 1 1 
+DRsize.010 0 0 0 1 0 1 
+DRsize.011 0 0 1 0 0 1 
+DRsize.100 0 1 0 0 0 1 
+DRsize.101 1 0 0 0 0 1 
+
+State Machine - |toplevel|soc:SoC|DijkstraCore:dijkstra_core_0|State
+Name State.FINISH State.TRACE_PATH State.LOAD_PREV2 State.LOAD_PREV1 State.DONE_BFS State.CHECK_NEIGHBORS State.VISIT_NODES4 State.VISIT_NODES3 State.VISIT_NODES2 State.VISIT_NODES1 State.BOUND_CHECK4B State.BOUND_CHECK4A State.BOUND_CHECK3B State.BOUND_CHECK3A State.BOUND_CHECK2B State.BOUND_CHECK2A State.BOUND_CHECK1B State.BOUND_CHECK1A State.LOAD_END State.INIT State.IDLE State.RESET 
+State.RESET 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+State.IDLE 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 
+State.INIT 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 
+State.LOAD_END 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 
+State.BOUND_CHECK1A 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 
+State.BOUND_CHECK1B 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 
+State.BOUND_CHECK2A 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 
+State.BOUND_CHECK2B 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 
+State.BOUND_CHECK3A 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 
+State.BOUND_CHECK3B 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 
+State.BOUND_CHECK4A 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 
+State.BOUND_CHECK4B 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 
+State.VISIT_NODES1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 
+State.VISIT_NODES2 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.VISIT_NODES3 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.VISIT_NODES4 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.CHECK_NEIGHBORS 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.DONE_BFS 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.LOAD_PREV1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.LOAD_PREV2 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.TRACE_PATH 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.FINISH 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+
+State Machine - |toplevel|ps2:U1|cur_state
+Name cur_state.trans cur_state.pulldat cur_state.pullclk cur_state.listen 
+cur_state.listen 0 0 0 0 
+cur_state.pullclk 0 0 1 1 
+cur_state.pulldat 0 1 0 1 
+cur_state.trans 1 0 0 1 
